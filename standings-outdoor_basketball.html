@@ -249,7 +249,7 @@
 // Your sheet must be shared: Share → Anyone with the link → Viewer
 // ══════════════════════════════════════════════════════════════
 const SHEET_ID  = ''; // ← e.g. '1aBcDeFgHiJkLmNoPqRsTuVwXyZ'
-const SHEET_TAB = ''; // ← e.g. 'Basketball'
+const SHEET_TAB = 'OutdoorBasketball-Standings'; // ← pre-filled — matches your Google Sheet tab
 
 function riPct(w,l){ return w+l===0?'—':(w/(w+l)).toFixed(3).replace(/^0/,''); }
 function riPctCol(w,l){ if(w+l===0)return '#7A95A8'; const p=w/(w+l); return p>=.6?'#1A9E6A':p>=.4?'#C27800':'#7A95A8'; }

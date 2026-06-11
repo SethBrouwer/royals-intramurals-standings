@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Ultimate Frisbee Schedule — Royals Intramurals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet"/>
+  <!--
+  ══════════════════════════════════════════════════════════════
+  IFRAME SCHEDULE — Ultimate Frisbee
+  ══════════════════════════════════════════════════════════════
+  Embed in Sidearm using the iFrame tool:
+    Width:    100%
+    Height:   600px  (adjust up if you have many games)
+    Scrolling: Auto
+
+  SETUP:
+    1. Open your Royals Schedule Google Sheet
+    2. Go to the "UltimateFrisbee" tab
+    3. Make sure sheet is shared: Share → Anyone with link → Viewer
+    4. Copy the Sheet ID from the URL (between /d/ and /edit)
+    5. Edit this file on GitHub — find SHEET_ID and SHEET_TAB below
+    6. Paste in your values and commit
+
+  GOOGLE SHEET COLUMN ORDER:
+    A: Date (e.g. Jan 13)   B: Day (e.g. Mon)   C: Time (e.g. 7:00 PM)
+    D: Home Team            E: Away Team         F: Location
+    G: Result (e.g. 42-38 or blank if not played)
+    H: Notes (optional)
+  ══════════════════════════════════════════════════════════════
+  -->
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Barlow',sans-serif; background:#fff; color:#00243A; }
+    @keyframes ri-fade { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#fff;">
+
+<!-- Header -->
+<div style="background:#00243A;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #CC2B2B;">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span style="font-size:24px;">🥏</span>
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.4);">Redeemer Intramurals · 2026/27</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:#fff;line-height:1.1;">Ultimate Frisbee <span style="color:#CC2B2B;">Schedule</span></div>
+    </div>
+  </div>
+  <div style="text-align:right;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);" id="ri-filter-label">All Games</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;" id="ri-updated">—</div>
+  </div>
+</div>
+
+<!-- Filter tabs -->
+<div style="background:#F4F7FA;border-bottom:1px solid #DDE4EC;display:flex;gap:0;">
+  <button onclick="riFilter('all',this)" id="btn-all" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#CC2B2B;background:none;border:none;border-bottom:2px solid #CC2B2B;padding:10px 16px;cursor:pointer;margin-bottom:-1px;">All Games</button>
+  <button onclick="riFilter('upcoming',this)" id="btn-upcoming" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7A95A8;background:none;border:none;border-bottom:2px solid transparent;padding:10px 16px;cursor:pointer;margin-bottom:-1px;">Upcoming</button>
+  <button onclick="riFilter('results',this)" id="btn-results" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#7A95A8;background:none;border:none;border-bottom:2px solid transparent;padding:10px 16px;cursor:pointer;margin-bottom:-1px;">Results</button>
+</div>
+
+<!-- Schedule table -->
+<div id="ri-wrap">
+  <table style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr style="background:#F4F7FA;border-bottom:2px solid #DDE4EC;">
+        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:9px 16px;text-align:left;">Date</th>
+        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:9px 16px;text-align:left;">Time</th>
+        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:9px 16px;text-align:left;">Matchup</th>
+        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:9px 16px;text-align:left;">Location</th>
+        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:9px 16px;text-align:center;">Result</th>
+      </tr>
+    </thead>
+    <tbody id="ri-body">
+      <!-- Placeholder rows — replaced when sheet is connected -->
+      <tr style="border-bottom:1px solid #DDE4EC;">
+        <td style="padding:14px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#00243A;line-height:1;">TBD</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#CC2B2B;">2026</div>
+        </td>
+        <td style="padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#00243A;">TBD</td>
+        <td style="padding:14px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:#00243A;">Schedule to be announced</div>
+          <div style="font-size:11px;color:#7A95A8;">Games posted after registration closes</div>
+        </td>
+        <td style="padding:14px 16px;font-size:13px;color:#3A5568;">Athletic Centre</td>
+        <td style="padding:14px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:#F4F7FA;color:#7A95A8;padding:3px 10px;border-radius:2px;">Upcoming</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Footer -->
+<div style="background:#F4F7FA;border-top:1px solid #DDE4EC;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;">
+  <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7A95A8;">Auto-refreshes every 60s from Google Sheets</span>
+  <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#CC2B2B;">Redeemer Royals Intramurals</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// SETUP — only two lines to change:
+//
+// SHEET_ID:  From your Google Sheet URL:
+//   https://docs.google.com/spreadsheets/d/SHEET_ID/edit
+//   Copy everything between /d/ and /edit
+//
+// SHEET_TAB: Exact tab name for this sport's schedule
+//   e.g. 'Basketball' or 'SoccerI'
+//
+// Sheet must be shared: Share → Anyone with the link → Viewer
+// ══════════════════════════════════════════════════════════════
+const SHEET_ID  = ''; // ← paste your Sheet ID here
+const SHEET_TAB = 'UltimateFrisbee-Schedule'; // ← pre-filled — matches your Google Sheet tab
+
+// ── state ──
+let allGames = [];
+let activeFilter = 'all';
+
+function riStatus(msg) {
+  const el = document.getElementById('ri-updated');
+  if(el) el.textContent = msg;
+}
+function riSetFilter(label) {
+  const el = document.getElementById('ri-filter-label');
+  if(el) el.textContent = label;
+}
+function riParseCSV(t) {
+  return t.trim().split('\n').map(line => {
+    const res=[]; let cur='',inQ=false;
+    for(const ch of line) { if(ch==='"'){inQ=!inQ;} else if(ch===','&&!inQ){res.push(cur.trim());cur='';} else{cur+=ch;} }
+    res.push(cur.trim()); return res;
+  });
+}
+function riClean(s) { return (s||'').replace(/^"+|"+$/g,'').trim(); }
+
+function riIsPlayed(result) {
+  return result && result !== '' && result !== '—' && result !== 'TBD';
+}
+
+function riRenderRows(games) {
+  if(!games.length) {
+    document.getElementById('ri-body').innerHTML = `
+      <tr><td colspan="5" style="padding:32px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#7A95A8;">No games to show</td></tr>`;
+    return;
+  }
+  document.getElementById('ri-body').innerHTML = games.map((g,i) => {
+    const played = riIsPlayed(g.result);
+    const bg = i%2===0 ? '#fff' : '#F9FAFC';
+    return `<tr style="border-bottom:1px solid #DDE4EC;background:${bg};">
+      <td style="padding:13px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#00243A;line-height:1;">${g.date}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#CC2B2B;">${g.day}</div>
+      </td>
+      <td style="padding:13px 16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#00243A;">${g.time}</td>
+      <td style="padding:13px 16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:#00243A;">${g.home} <span style="color:#CC2B2B;font-weight:600;">vs</span> ${g.away}</div>
+        ${g.notes ? `<div style="font-size:11px;color:#7A95A8;margin-top:2px;">${g.notes}</div>` : ''}
+      </td>
+      <td style="padding:13px 16px;font-size:13px;color:#3A5568;">${g.location}</td>
+      <td style="padding:13px 16px;text-align:center;">
+        ${played
+          ? `<span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;color:#00243A;background:#EEF2F6;padding:4px 10px;border-radius:3px;">${g.result}</span>`
+          : `<span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(204,43,43,.08);color:#CC2B2B;padding:4px 10px;border-radius:2px;">Upcoming</span>`
+        }
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function riFilter(type, btn) {
+  activeFilter = type;
+  document.querySelectorAll('[id^="btn-"]').forEach(b => {
+    b.style.color = '#7A95A8';
+    b.style.borderBottom = '2px solid transparent';
+  });
+  btn.style.color = '#CC2B2B';
+  btn.style.borderBottom = '2px solid #CC2B2B';
+  if(type === 'all') { riSetFilter('All Games'); riRenderRows(allGames); }
+  else if(type === 'upcoming') { riSetFilter('Upcoming'); riRenderRows(allGames.filter(g => !riIsPlayed(g.result))); }
+  else if(type === 'results') { riSetFilter('Results'); riRenderRows(allGames.filter(g => riIsPlayed(g.result))); }
+}
+
+async function riLoad(){
+  if(!SHEET_ID || !SHEET_TAB){ riStatus('Add SHEET_ID and SHEET_TAB to activate'); return; }
+  riStatus('Loading...');
+  const csvUrl=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
+  const proxies=[
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`,
+    `https://corsproxy.io/?${encodeURIComponent(csvUrl)}`,
+    `https://thingproxy.freeboard.io/fetch/${csvUrl}`,
+  ];
+  for(const proxy of proxies){
+    try{
+      const res=await fetch(proxy,{cache:'no-store'});
+      if(!res.ok) continue;
+      const text=await res.text();
+      if(text.includes('<html')||text.length<10) continue;
+      const parsed=riParseCSV(text).slice(1);
+      const games=parsed.map(r=>({
+        date:    riClean(r[0]),
+        day:     riClean(r[1]),
+        time:    riClean(r[2]),
+        home:    riClean(r[3]),
+        away:    riClean(r[4]),
+        location:riClean(r[5]),
+        result:  riClean(r[6]),
+        notes:   riClean(r[7]),
+      })).filter(g=>g.home&&g.home!=='Home Team'&&g.home!=='E'&&g.home!=='Team Name');
+      if(games.length){
+        allGames=games;
+        riFilter(activeFilter,document.getElementById('btn-'+activeFilter));
+        riStatus('Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+        return;
+      }
+    }catch(e){}
+  }
+  riStatus('Could not load — check SHEET_ID, tab name, and that sheet is shared publicly (Anyone with link → Viewer)');
+}
+
+riLoad();
+setInterval(riLoad, 60000);
+</script>
+</body>
+</html>
