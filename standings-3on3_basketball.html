@@ -9,148 +9,242 @@
   ══════════════════════════════════════════════════════════════
   IFRAME STANDINGS — 3on3 Basketball
   ══════════════════════════════════════════════════════════════
-  This file is designed to be embedded as an iFrame inside
-  Sidearm's Sport File editor. No nav, no footer — just the
-  standings widget.
+  Embed in Sidearm using the iFrame tool:
+    Width:    100%
+    Height:   680px  (12 teams — reduce if fewer teams)
+    Scrolling: Auto
 
-  TO CONNECT GOOGLE SHEETS (auto-updates):
+  TO CONNECT GOOGLE SHEETS:
     1. Open your Royals Standings Google Sheet
-    2. Click the "3on3Basketball" tab
-    3. File → Share → Publish to web
-    4. Select the "3on3Basketball" tab → CSV → Publish → copy URL
-    5. Paste it into RI_SHEET_URL below (replace the empty string)
-    6. Re-upload this file — standings now auto-refresh every 60s
+    2. Go to the "3on3Basketball" tab
+    3. File → Share → Publish to web → "3on3Basketball" tab → CSV → Publish
+    4. Copy the URL
+    5. Paste it below replacing the empty string in RI_SHEET_URL
+    6. Re-upload this file to GitHub Pages
+    Standings will then auto-refresh every 60 seconds.
 
-  TO UPDATE MANUALLY (no Google Sheets):
-    - Edit the W / L / Streak cells in the table below
-    - Re-upload the file
-
-  SIDEARM IFRAME SETUP:
-    - Width:  100%
-    - Height: 420px  (increase if you have more teams)
-    - Scrolling: Auto
+  GOOGLE SHEET COLUMN ORDER (must match exactly):
+    A: Rank   B: Team Name   C: W   D: L   E: PF   F: PA
+    G: Streak (e.g. WWWLL — full history string)   H: Notes
   ══════════════════════════════════════════════════════════════
   -->
   <style>
     * { box-sizing:border-box; margin:0; padding:0; }
-    body {
-      font-family:'Barlow',sans-serif;
-      background:#ffffff;
-      color:#00243A;
-      padding:0;
-      margin:0;
-    }
-    @keyframes ri-spin { to{transform:rotate(360deg)} }
-    @keyframes ri-fade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    body { font-family:'Barlow',sans-serif; background:#fff; color:#00243A; }
+    @keyframes ri-fade { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+    #ri-body tr { animation:ri-fade .25s ease both; }
   </style>
 </head>
 <body style="margin:0;padding:0;background:#fff;">
 
-<!-- Header bar -->
-<div style="background:#00243A;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #CC2B2B;">
-  <div style="display:flex;align-items:center;gap:10px;">
-    <span style="font-size:22px;">🏀</span>
+<!-- Header -->
+<div style="background:#00243A;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #CC2B2B;">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span style="font-size:24px;">🏀</span>
     <div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.45);">Redeemer Intramurals · 2026/27</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:#fff;line-height:1;">3on3 Basketball <span style="color:#CC2B2B;">Standings</span></div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.4);">Redeemer Intramurals · 2026/27</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;color:#fff;line-height:1.1;">3on3 Basketball <span style="color:#CC2B2B;">Standings</span></div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:6px;" id="ri-status">
-    <div style="width:5px;height:5px;border-radius:50%;background:#1A9E6A;"></div>
-    <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);">Live</span>
+  <div style="text-align:right;">
+    <div style="display:flex;align-items:center;gap:5px;justify-content:flex-end;" id="ri-live-dot">
+      <div style="width:6px;height:6px;border-radius:50%;background:#1A9E6A;"></div>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);">Live</span>
+    </div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;" id="ri-updated">—</div>
   </div>
 </div>
 
-<!-- Standings table -->
-<div id="ri-wrap">
-  <table style="width:100%;border-collapse:collapse;" id="ri-tbl">
-    <thead>
-      <tr style="background:#F4F7FA;border-bottom:2px solid #DDE4EC;">
-        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;width:40px;">#</th>
-        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:left;">Team</th>
-        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">W</th>
-        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">L</th>
-        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">PCT</th>
-        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">GB</th>
-        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">Streak</th>
-        <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">Last 5</th>
-      </tr>
-    </thead>
-    <tbody id="ri-body">
-      <!-- Placeholder rows — replaced by Google Sheets if URL is set -->
-      <tr style="border-bottom:1px solid #DDE4EC;border-left:3px solid #CC2B2B;">
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#00243A;">1</span></td>
-        <td style="padding:13px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team Name</div>
-          <div style="font-size:11px;color:#7A95A8;">Add your team names once registration opens</div>
+<!-- Table -->
+<table style="width:100%;border-collapse:collapse;">
+  <thead>
+    <tr style="background:#F4F7FA;border-bottom:2px solid #DDE4EC;">
+      <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;width:40px;">#</th>
+      <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:left;">Team</th>
+      <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">W</th>
+      <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">L</th>
+      <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">PCT</th>
+      <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">GB</th>
+      <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">Streak</th>
+      <th style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A95A8;padding:10px 16px;text-align:center;">Last 5</th>
+    </tr>
+  </thead>
+  <tbody id="ri-body">
+      <tr style="border-bottom:1px solid #DDE4EC;border-left:3px solid #CC2B2B;background:rgba(0,36,58,.02);">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#00243A;">1</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 1</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
         </td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
       </tr>
       <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">2</span></td>
-        <td style="padding:13px 16px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team Name</div></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">2</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 2</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
       </tr>
       <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">3</span></td>
-        <td style="padding:13px 16px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team Name</div></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">3</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 3</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
       </tr>
       <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">4</span></td>
-        <td style="padding:13px 16px;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team Name</div></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">4</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 4</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
       </tr>
-    </tbody>
-  </table>
-</div>
+      <tr style="border-bottom:1px solid #DDE4EC;">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">5</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 5</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid #DDE4EC;">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">6</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 6</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid #DDE4EC;">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">7</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 7</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid #DDE4EC;">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">8</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 8</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid #DDE4EC;">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">9</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 9</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid #DDE4EC;">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">10</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 10</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid #DDE4EC;">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">11</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 11</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+      </tr>
+      <tr style="border-bottom:1px solid #DDE4EC;">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">12</span></td>
+        <td style="padding:12px 16px;">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 12</div>
+          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
+        </td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
+      </tr>
+  </tbody>
+</table>
 
-<!-- Footer bar -->
+<!-- Footer -->
 <div style="background:#F4F7FA;border-top:1px solid #DDE4EC;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;">
-  <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7A95A8;" id="ri-updated">Last updated: —</span>
+  <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7A95A8;">Auto-refreshes every 60s from Google Sheets</span>
   <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#CC2B2B;">Redeemer Royals Intramurals</span>
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-// PASTE YOUR GOOGLE SHEETS CSV URL HERE
-// ══════════════════════════════════════════════════════════════
-const RI_SHEET_URL = ''; // ← e.g. 'https://docs.google.com/spreadsheets/d/ABC/gviz/tq?tqx=out:csv&sheet=3on3Basketball'
+const RI_SHEET_URL = ''; // ← PASTE YOUR PUBLISHED CSV URL HERE
 
-// ══════════════════════════════════════════════════════════════
-// ENGINE — do not edit below
-// ══════════════════════════════════════════════════════════════
 function riPct(w,l){ return w+l===0?'—':(w/(w+l)).toFixed(3).replace(/^0/,''); }
-function riGB(topW,topL,w,l){
-  if(topW===w&&topL===l) return '—';
-  return (((topW-topL)-(w-l))/2).toFixed(1).replace(/\.0$/,'');
-}
 function riPctCol(w,l){ if(w+l===0)return '#7A95A8'; const p=w/(w+l); return p>=.6?'#1A9E6A':p>=.4?'#C27800':'#7A95A8'; }
+function riGB(tw,tl,w,l){ if(tw===w&&tl===l)return '—'; return (((tw-tl)-(w-l))/2).toFixed(1).replace(/\.0$/,''); }
 function riLast5(s){
-  if(!s||s.length<1) return '<span style="color:#7A95A8;">—</span>';
-  return s.split('').slice(-5).map(c=>
-    `<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${c.toUpperCase()==='W'?'#1A9E6A':'#B52A2A'};font-family:Barlow Condensed,sans-serif;font-size:8px;font-weight:800;color:#fff;text-align:center;line-height:14px;margin:0 1px;">${c.toUpperCase()}</span>`
-  ).join('');
+  if(!s) return '<span style="color:#7A95A8">—</span>';
+  return s.toUpperCase().split('').filter(c=>c==='W'||c==='L').slice(-5)
+    .map(c=>`<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${c==='W'?'#1A9E6A':'#B52A2A'};font-family:'Barlow Condensed',sans-serif;font-size:8px;font-weight:800;color:#fff;text-align:center;line-height:14px;margin:0 1px;">${c}</span>`).join('');
 }
 function riParseCSV(t){
   return t.trim().split('\n').map(r=>{
@@ -159,52 +253,58 @@ function riParseCSV(t){
     res.push(c.trim()); return res;
   });
 }
-function riTime(){
-  const d=new Date();
-  return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-}
 
 async function riLoad(){
   if(!RI_SHEET_URL) return;
   try {
-    const res = await fetch(RI_SHEET_URL+'&t='+Date.now());
+    // CORS proxy list — tries each one in order until one works
+    const PROXIES = [
+      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      url => `https://cors-anywhere.herokuapp.com/${url}`,
+    ];
+    let res = null;
+    for (const proxy of PROXIES) {
+      try {
+        res = await fetch(proxy(RI_SHEET_URL + '&cachebust=' + Date.now()));
+        if (res.ok) break;
+      } catch(e) { res = null; }
+    }
+    if (!res || !res.ok) throw new Error('All proxies failed');
     const text = await res.text();
     const rows = riParseCSV(text).slice(1)
-      .map(r=>({team:r[1]||'',w:parseInt(r[2])||0,l:parseInt(r[3])||0,streak:r[6]||'',note:r[7]||''}))
+      .map(r=>({team:(r[1]||'').trim(),w:parseInt(r[2])||0,l:parseInt(r[3])||0,pf:parseInt(r[4])||0,pa:parseInt(r[5])||0,streak:(r[6]||'').trim(),note:(r[7]||'').trim()}))
       .filter(r=>r.team);
     if(!rows.length) return;
-    rows.sort((a,b)=>b.w-a.w||a.l-b.l);
+    rows.sort((a,b)=>b.w-a.w||a.l-b.l||(b.pf-b.pa)-(a.pf-a.pa));
     const top=rows[0];
-    const tbody=document.getElementById('ri-body');
-    tbody.style.animation='ri-fade .3s ease';
-    tbody.innerHTML=rows.map((r,i)=>{
-      const gb=riGB(top.w,top.l,r.w,r.l);
-      const strW=r.streak&&r.streak[0]==='W';
-      return `<tr style="border-bottom:1px solid #DDE4EC;${i===0?'border-left:3px solid #CC2B2B;background:rgba(0,36,58,.02);':''}">
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:${i===0?'#00243A':'#7A95A8'};">${i+1}</span></td>
-        <td style="padding:13px 16px;">
+    document.getElementById('ri-body').innerHTML=rows.map((r,i)=>{
+      const first=i===0;
+      return `<tr style="border-bottom:1px solid #DDE4EC;${first?'border-left:3px solid #CC2B2B;background:rgba(0,36,58,.02);':''}">
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:${first?'#00243A':'#7A95A8'};">${i+1}</span></td>
+        <td style="padding:12px 16px;">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">${r.team}</div>
           ${r.note?`<div style="font-size:11px;color:#7A95A8;">${r.note}</div>`:''}
         </td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">${r.w}</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">${r.l}</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:${riPctCol(r.w,r.l)};">${riPct(r.w,r.l)}</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">${gb}</span></td>
-        <td style="padding:13px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:${strW?'#1A9E6A':'#B52A2A'};">${r.streak||'—'}</span></td>
-        <td style="padding:13px 16px;text-align:center;">${riLast5(r.streak)}</td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">${r.w}</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">${r.l}</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:${riPctCol(r.w,r.l)};">${riPct(r.w,r.l)}</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">${riGB(top.w,top.l,r.w,r.l)}</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:${r.streak.slice(-1).toUpperCase()==='W'?'#1A9E6A':'#B52A2A'};">${r.streak?r.streak.slice(-1).toUpperCase()+r.streak.replace(/[^wWlL]/g,'').length:'—'}</span></td>
+        <td style="padding:12px 16px;text-align:center;">${riLast5(r.streak)}</td>
       </tr>`;
     }).join('');
     const upd=document.getElementById('ri-updated');
-    if(upd) upd.textContent='Last updated: '+riTime();
+    const d=new Date();
+    if(upd) upd.textContent='Updated '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   }catch(e){
     const upd=document.getElementById('ri-updated');
-    if(upd) upd.textContent='Could not load — check Sheet URL';
+    if(upd) upd.textContent='Sheet not connected';
   }
 }
 
 riLoad();
 setInterval(riLoad,60000);
 </script>
-
 </body>
 </html>
