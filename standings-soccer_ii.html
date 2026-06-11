@@ -236,8 +236,23 @@
 </div>
 
 <script>
-const RI_SHEET_URL = ''; // ← PASTE YOUR PUBLISHED CSV URL HERE
+// ══════════════════════════════════════════════════════════════
+// HOW TO SET YOUR SHEET ID AND TAB NAME:
+//
+// 1. Open your Google Sheet
+// 2. Look at the URL — it looks like:
+//    https://docs.google.com/spreadsheets/d/XXXXXXXXXXX/edit
+//    Copy the long string between /d/ and /edit — that is your SHEET_ID
+// 3. Set the SHEET_TAB to the exact tab name (e.g. 'Basketball')
+//
+// Example:
+//   const SHEET_ID  = '1aBcDeFgHiJkLmNoPqRsTuVwXyZ123456';
+//   const SHEET_TAB = 'Basketball';
+// ══════════════════════════════════════════════════════════════
+const SHEET_ID  = ''; // ← PASTE YOUR SHEET ID HERE
+const SHEET_TAB = ''; // ← PASTE YOUR TAB NAME HERE e.g. 'Basketball'
 
+// ── helpers ──
 function riPct(w,l){ return w+l===0?'—':(w/(w+l)).toFixed(3).replace(/^0/,''); }
 function riPctCol(w,l){ if(w+l===0)return '#7A95A8'; const p=w/(w+l); return p>=.6?'#1A9E6A':p>=.4?'#C27800':'#7A95A8'; }
 function riGB(tw,tl,w,l){ if(tw===w&&tl===l)return '—'; return (((tw-tl)-(w-l))/2).toFixed(1).replace(/\.0$/,''); }
@@ -246,40 +261,61 @@ function riLast5(s){
   return s.toUpperCase().split('').filter(c=>c==='W'||c==='L').slice(-5)
     .map(c=>`<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${c==='W'?'#1A9E6A':'#B52A2A'};font-family:'Barlow Condensed',sans-serif;font-size:8px;font-weight:800;color:#fff;text-align:center;line-height:14px;margin:0 1px;">${c}</span>`).join('');
 }
-function riParseCSV(t){
-  return t.trim().split('\n').map(r=>{
-    const res=[]; let c='',q=false;
-    for(const ch of r){ if(ch==='"')q=!q; else if(ch===','&&!q){res.push(c.trim());c='';}else c+=ch; }
-    res.push(c.trim()); return res;
-  });
+function riStatus(msg, ok){
+  const el = document.getElementById('ri-updated');
+  if(el) el.textContent = msg;
 }
 
 async function riLoad(){
-  if(!RI_SHEET_URL) return;
+  if(!SHEET_ID || !SHEET_TAB){
+    riStatus('Add SHEET_ID and SHEET_TAB to activate');
+    return;
+  }
+
+  // Use Google Visualization API — no CORS issues, no proxy needed
+  // This is the most reliable method for reading public Google Sheets
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_TAB)}&t=${Date.now()}`;
+
   try {
-    // CORS proxy list — tries each one in order until one works
-    const PROXIES = [
-      url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-      url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-      url => `https://cors-anywhere.herokuapp.com/${url}`,
-    ];
-    let res = null;
-    for (const proxy of PROXIES) {
-      try {
-        res = await fetch(proxy(RI_SHEET_URL + '&cachebust=' + Date.now()));
-        if (res.ok) break;
-      } catch(e) { res = null; }
+    riStatus('Loading...');
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Fetch failed: ' + res.status);
+    const raw = await res.text();
+
+    // Google wraps JSON in: google.visualization.Query.setResponse({...})
+    // Strip the wrapper to get clean JSON
+    const json = JSON.parse(raw.replace(/^[^(]+\(/, '').replace(/\);?$/, ''));
+
+    if(!json.table || !json.table.rows){
+      riStatus('No data in sheet yet');
+      return;
     }
-    if (!res || !res.ok) throw new Error('All proxies failed');
-    const text = await res.text();
-    const rows = riParseCSV(text).slice(1)
-      .map(r=>({team:(r[1]||'').trim(),w:parseInt(r[2])||0,l:parseInt(r[3])||0,pf:parseInt(r[4])||0,pa:parseInt(r[5])||0,streak:(r[6]||'').trim(),note:(r[7]||'').trim()}))
-      .filter(r=>r.team);
-    if(!rows.length) return;
-    rows.sort((a,b)=>b.w-a.w||a.l-b.l||(b.pf-b.pa)-(a.pf-a.pa));
-    const top=rows[0];
-    document.getElementById('ri-body').innerHTML=rows.map((r,i)=>{
-      const first=i===0;
+
+    // Parse rows — cols: 0=Rank 1=TeamName 2=W 3=L 4=PF 5=PA 6=Streak 7=Notes
+    const rows = json.table.rows.map(r => ({
+      team:   (r.c[1]?.v || '').toString().trim(),
+      w:      parseInt(r.c[2]?.v) || 0,
+      l:      parseInt(r.c[3]?.v) || 0,
+      pf:     parseInt(r.c[4]?.v) || 0,
+      pa:     parseInt(r.c[5]?.v) || 0,
+      streak: (r.c[6]?.v || '').toString().trim(),
+      note:   (r.c[7]?.v || '').toString().trim(),
+    })).filter(r => r.team && r.team !== 'Team Name');
+
+    if(!rows.length){
+      riStatus('Sheet connected — add team names to see standings');
+      return;
+    }
+
+    rows.sort((a,b) => b.w-a.w || a.l-b.l || (b.pf-b.pa)-(a.pf-a.pa));
+    const top = rows[0];
+
+    document.getElementById('ri-body').innerHTML = rows.map((r,i) => {
+      const first = i===0;
+      const strLast = r.streak ? r.streak.replace(/[^wWlL]/g,'').slice(-1).toUpperCase() : '';
+      const strCount = r.streak ? r.streak.replace(/[^wWlL]/g,'').length : 0;
+      const strDisplay = strLast ? strLast + strCount : '—';
+      const strColor = strLast === 'W' ? '#1A9E6A' : strLast === 'L' ? '#B52A2A' : '#7A95A8';
       return `<tr style="border-bottom:1px solid #DDE4EC;${first?'border-left:3px solid #CC2B2B;background:rgba(0,36,58,.02);':''}">
         <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:${first?'#00243A':'#7A95A8'};">${i+1}</span></td>
         <td style="padding:12px 16px;">
@@ -290,21 +326,22 @@ async function riLoad(){
         <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">${r.l}</span></td>
         <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:${riPctCol(r.w,r.l)};">${riPct(r.w,r.l)}</span></td>
         <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">${riGB(top.w,top.l,r.w,r.l)}</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:${r.streak.slice(-1).toUpperCase()==='W'?'#1A9E6A':'#B52A2A'};">${r.streak?r.streak.slice(-1).toUpperCase()+r.streak.replace(/[^wWlL]/g,'').length:'—'}</span></td>
+        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:${strColor};">${strDisplay}</span></td>
         <td style="padding:12px 16px;text-align:center;">${riLast5(r.streak)}</td>
       </tr>`;
     }).join('');
-    const upd=document.getElementById('ri-updated');
-    const d=new Date();
-    if(upd) upd.textContent='Updated '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  }catch(e){
-    const upd=document.getElementById('ri-updated');
-    if(upd) upd.textContent='Sheet not connected';
+
+    const d = new Date();
+    riStatus('Updated ' + d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+
+  } catch(e) {
+    riStatus('Error: ' + e.message + ' — check SHEET_ID and that sheet is shared publicly');
+    console.error('Standings load error:', e);
   }
 }
 
 riLoad();
-setInterval(riLoad,60000);
+setInterval(riLoad, 60000);
 </script>
 </body>
 </html>
