@@ -236,7 +236,7 @@
 </div>
 
 <script>
-const RI_SHEET_URL = ''; // ← PASTE YOUR PUBLISHED CSV URL HERE
+const RI_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQqYXzdp1KEW-AFZeVsQ1FqwxMY4rgG8PPgSQZ9XaZeRwp-WMmewq-UH2o_Tc1LWW0-soIJ9Rj_H1E8/pub?gid=0&single=true&output=csv'; // ← PASTE YOUR PUBLISHED CSV URL HERE
 
 function riPct(w,l){ return w+l===0?'—':(w/(w+l)).toFixed(3).replace(/^0/,''); }
 function riPctCol(w,l){ if(w+l===0)return '#7A95A8'; const p=w/(w+l); return p>=.6?'#1A9E6A':p>=.4?'#C27800':'#7A95A8'; }
