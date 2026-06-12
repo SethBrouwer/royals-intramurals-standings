@@ -97,20 +97,26 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-// SETUP — paste your Google Apps Script URL below
-// Same URL as standings files — one script serves all tabs
-// ══════════════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHUF2iF9EVYenlxsvAWVus538tYCrx0DgCHmPvoqnLCb2Gbv26GMEZQl2Ua-DNUZMEmw/exec'; // ← paste your Web App URL here
-const SHEET_TAB = 'SoccerI-Schedule'; // ← pre-filled
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRVnm-wZP1UHa-SnZ5l6wznGddqt87H2Z7hm0_8sil3Y25dXyaiCFd-sE09zSd2U_SXg/exec'; // ← paste your Web App URL here
+const SHEET_TAB = 'SoccerI-Schedule';  // ← pre-filled
 
 let allGames = [];
 let activeFilter = 'all';
 
 function riStatus(msg){ const el=document.getElementById('ri-updated'); if(el) el.textContent=msg; }
 function riSetFilter(label){ const el=document.getElementById('ri-filter-label'); if(el) el.textContent=label; }
-function riClean(s){ return (s||'').toString().replace(/^"+|"+$/g,'').trim(); }
-function riIsPlayed(result){ return result && result!=='' && result!=='—' && result!=='TBD'; }
+function riClean(s){ return (s||'').toString().trim(); }
+function riIsPlayed(r){ return r && r!=='' && r!=='—' && r!=='TBD'; }
+
+// Case-insensitive header lookup — handles slight naming differences
+function riFindKey(obj, candidates) {
+  const keys = Object.keys(obj).map(k=>k.toLowerCase().trim());
+  for(const c of candidates){
+    const idx = keys.indexOf(c.toLowerCase());
+    if(idx !== -1) return Object.keys(obj)[idx];
+  }
+  return null;
+}
 
 function riRenderRows(games){
   if(!games.length){
@@ -159,22 +165,39 @@ async function riLoad(){
     if(!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     if(json.error) throw new Error(json.error);
-    const games = json.rows.map(r=>({
-      date:     riClean(r['Date']      || r['B'] || ''),
-      day:      riClean(r['Day']       || r['C'] || ''),
-      time:     riClean(r['Time']      || r['D'] || ''),
-      home:     riClean(r['Home Team'] || r['E'] || ''),
-      result:   riClean(r['Score']     || r['F'] || ''),
-      away:     riClean(r['Away Team'] || r['G'] || ''),
-      location: riClean(r['Location']  || r['H'] || ''),
-      notes:    riClean(r['Notes']     || r['I'] || ''),
-    })).filter(g=>g.home && g.home!=='Home Team' && g.home!=='');
-    if(games.length){
-      allGames=games;
-      riFilter(activeFilter, document.getElementById('btn-'+activeFilter));
-      riStatus('Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
-    } else {
+    if(!json.rows || !json.rows.length){
       riStatus('Sheet connected — add games to see schedule');
+      return;
+    }
+
+    // Use flexible header matching so minor differences don't break it
+    const games = json.rows.map(r => {
+      const homeKey     = riFindKey(r, ['Home Team','Home','home team','home']);
+      const awayKey     = riFindKey(r, ['Away Team','Away','away team','away']);
+      const dateKey     = riFindKey(r, ['Date','date']);
+      const dayKey      = riFindKey(r, ['Day','day']);
+      const timeKey     = riFindKey(r, ['Time','time']);
+      const scoreKey    = riFindKey(r, ['Score','Result','score','result']);
+      const locationKey = riFindKey(r, ['Location','location','venue','Venue']);
+      const notesKey    = riFindKey(r, ['Notes','notes']);
+      return {
+        home:     riClean(homeKey     ? r[homeKey]     : ''),
+        away:     riClean(awayKey     ? r[awayKey]     : ''),
+        date:     riClean(dateKey     ? r[dateKey]     : ''),
+        day:      riClean(dayKey      ? r[dayKey]      : ''),
+        time:     riClean(timeKey     ? r[timeKey]     : ''),
+        result:   riClean(scoreKey    ? r[scoreKey]    : ''),
+        location: riClean(locationKey ? r[locationKey] : ''),
+        notes:    riClean(notesKey    ? r[notesKey]    : ''),
+      };
+    }).filter(g => g.home !== '' && g.home !== 'Home Team');
+
+    if(games.length){
+      allGames = games;
+      riFilter(activeFilter, document.getElementById('btn-' + activeFilter));
+      riStatus('Updated ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+    } else {
+      riStatus('Sheet connected — no games found. Check Home Team column has data.');
     }
   } catch(e) {
     riStatus('Error: ' + e.message);
