@@ -197,15 +197,16 @@ async function riLoad(){
       if(text.includes('<html')||text.length<10) continue;
       const parsed=riParseCSV(text).slice(1);
       const games=parsed.map(r=>({
-        date:    riClean(r[0]),
-        day:     riClean(r[1]),
-        time:    riClean(r[2]),
-        home:    riClean(r[3]),
-        away:    riClean(r[4]),
-        location:riClean(r[5]),
-        result:  riClean(r[6]),
-        notes:   riClean(r[7]),
-      })).filter(g=>g.home&&g.home!=='Home Team'&&g.home!=='E'&&g.home!=='Team Name');
+        // Columns: A=#  B=Date  C=Day  D=Time  E=Home  F=Score  G=Away  H=Location
+        date:    riClean(r[1]),
+        day:     riClean(r[2]),
+        time:    riClean(r[3]),
+        home:    riClean(r[4]),
+        result:  riClean(r[5]),
+        away:    riClean(r[6]),
+        location:riClean(r[7]),
+        notes:   riClean(r[8] || ''),
+      })).filter(g=>g.home&&g.home!=='Home Team'&&g.home!=='E'&&g.home!=='Team Name'&&g.home!=='Home Team');
       if(games.length){
         allGames=games;
         riFilter(activeFilter,document.getElementById('btn-'+activeFilter));
