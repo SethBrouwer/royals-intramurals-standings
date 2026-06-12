@@ -237,19 +237,11 @@
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// SETUP — only two lines to change:
-//
-// SHEET_ID:  Open your Google Sheet. Look at the URL:
-//   https://docs.google.com/spreadsheets/d/SHEET_ID_IS_HERE/edit
-//   Copy everything between /d/ and /edit
-//
-// SHEET_TAB: The exact name of the tab for this sport
-//   e.g. 'Basketball' or 'SoccerI'
-//
-// Your sheet must be shared: Share → Anyone with the link → Viewer
+// SETUP — paste your Google Apps Script URL below
+// See apps-script.js for setup instructions (5 min, one time)
 // ══════════════════════════════════════════════════════════════
-const SHEET_ID  = '1moba5JjhOwWymShgBKZ6UHovgsmUngtQYg3Gi6ce9l8'; // ← e.g. '1aBcDeFgHiJkLmNoPqRsTuVwXyZ'
-const SHEET_TAB = 'Pickleball-Standings'; // ← pre-filled — matches your Google Sheet tab
+const APPS_SCRIPT_URL = ''; // ← paste your Web App URL here
+const SHEET_TAB = 'Pickleball-Standings'; // ← pre-filled
 
 function riPct(w,l){ return w+l===0?'—':(w/(w+l)).toFixed(3).replace(/^0/,''); }
 function riPctCol(w,l){ if(w+l===0)return '#7A95A8'; const p=w/(w+l); return p>=.6?'#1A9E6A':p>=.4?'#C27800':'#7A95A8'; }
@@ -260,14 +252,7 @@ function riLast5(s){
     .map(c=>`<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${c==='W'?'#1A9E6A':'#B52A2A'};font-family:'Barlow Condensed',sans-serif;font-size:8px;font-weight:800;color:#fff;text-align:center;line-height:14px;margin:0 1px;">${c}</span>`).join('');
 }
 function riStatus(msg){ const el=document.getElementById('ri-updated'); if(el) el.textContent=msg; }
-function riParseCSV(t){
-  return t.trim().split('\n').map(line=>{
-    const res=[]; let cur='',inQ=false;
-    for(const ch of line){ if(ch==='"'){inQ=!inQ;} else if(ch===','&&!inQ){res.push(cur.trim());cur='';} else{cur+=ch;} }
-    res.push(cur.trim()); return res;
-  });
-}
-function riClean(s){ return (s||'').replace(/^"+|"+$/g,'').trim(); }
+function riClean(s){ return (s||'').toString().replace(/^"+|"+$/g,'').trim(); }
 function riRender(rows){
   if(!rows.length){ riStatus('Sheet connected — add team names to see standings'); return; }
   rows.sort((a,b)=>b.w-a.w||a.l-b.l||(b.pf-b.pa)-(a.pf-a.pa));
@@ -293,31 +278,32 @@ function riRender(rows){
 }
 
 async function riLoad(){
-  if(!SHEET_ID||!SHEET_TAB){ riStatus('Add SHEET_ID and SHEET_TAB to activate'); return; }
+  if(!APPS_SCRIPT_URL){ riStatus('Paste your Apps Script URL to activate'); return; }
   riStatus('Loading...');
-  const csvUrl=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
-  const proxies=[
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`,
-    `https://corsproxy.io/?${encodeURIComponent(csvUrl)}`,
-    `https://thingproxy.freeboard.io/fetch/${csvUrl}`,
-  ];
-  for(const proxy of proxies){
-    try{
-      const res=await fetch(proxy,{cache:'no-store'});
-      if(!res.ok) continue;
-      const text=await res.text();
-      if(text.includes('<html')||text.length<10) continue;
-      const rows=riParseCSV(text).slice(1)
-        .map(r=>({team:riClean(r[1]),w:parseInt(r[2])||0,l:parseInt(r[3])||0,pf:parseInt(r[4])||0,pa:parseInt(r[5])||0,streak:riClean(r[6]),note:riClean(r[7])}))
-        .filter(r=>r.team&&r.team!=='Team Name'&&r.team!=='B'&&r.team!=='Team 1 Name');
-      if(rows.length){ riRender(rows); return; }
-    }catch(e){}
+  try {
+    const url = APPS_SCRIPT_URL + '?tab=' + encodeURIComponent(SHEET_TAB) + '&t=' + Date.now();
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if(json.error) throw new Error(json.error);
+    const rows = json.rows.map(r=>({
+      team:   riClean(r['Team Name'] || r['B'] || ''),
+      w:      parseInt(r['W'] || r['C']) || 0,
+      l:      parseInt(r['L'] || r['D']) || 0,
+      pf:     parseInt(r['GF'] || r['E']) || 0,
+      pa:     parseInt(r['GA'] || r['F']) || 0,
+      streak: riClean(r['Streak'] || r['G'] || ''),
+      note:   riClean(r['Notes'] || r['H'] || ''),
+    })).filter(r=>r.team && r.team!=='Team Name' && r.team!=='');
+    riRender(rows);
+  } catch(e) {
+    riStatus('Error: ' + e.message);
+    console.error('Standings error:', e);
   }
-  riStatus('Could not load — check SHEET_ID, tab name, and that sheet is shared publicly (Anyone with link → Viewer)');
 }
 
 riLoad();
-setInterval(riLoad,60000);
+setInterval(riLoad, 60000);
 </script>
 </body>
 </html>

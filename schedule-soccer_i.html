@@ -98,124 +98,88 @@
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// SETUP — only two lines to change:
-//
-// SHEET_ID:  From your Google Sheet URL:
-//   https://docs.google.com/spreadsheets/d/SHEET_ID/edit
-//   Copy everything between /d/ and /edit
-//
-// SHEET_TAB: Exact tab name for this sport's schedule
-//   e.g. 'Basketball' or 'SoccerI'
-//
-// Sheet must be shared: Share → Anyone with the link → Viewer
+// SETUP — paste your Google Apps Script URL below
+// Same URL as standings files — one script serves all tabs
 // ══════════════════════════════════════════════════════════════
-const SHEET_ID  = '1moba5JjhOwWymShgBKZ6UHovgsmUngtQYg3Gi6ce9l8'; // ← paste your Sheet ID here
-const SHEET_TAB = 'SoccerI-Schedule'; // ← pre-filled — matches your Google Sheet tab
+const APPS_SCRIPT_URL = ''; // ← paste your Web App URL here
+const SHEET_TAB = 'SoccerI-Schedule'; // ← pre-filled
 
-// ── state ──
 let allGames = [];
 let activeFilter = 'all';
 
-function riStatus(msg) {
-  const el = document.getElementById('ri-updated');
-  if(el) el.textContent = msg;
-}
-function riSetFilter(label) {
-  const el = document.getElementById('ri-filter-label');
-  if(el) el.textContent = label;
-}
-function riParseCSV(t) {
-  return t.trim().split('\n').map(line => {
-    const res=[]; let cur='',inQ=false;
-    for(const ch of line) { if(ch==='"'){inQ=!inQ;} else if(ch===','&&!inQ){res.push(cur.trim());cur='';} else{cur+=ch;} }
-    res.push(cur.trim()); return res;
-  });
-}
-function riClean(s) { return (s||'').replace(/^"+|"+$/g,'').trim(); }
+function riStatus(msg){ const el=document.getElementById('ri-updated'); if(el) el.textContent=msg; }
+function riSetFilter(label){ const el=document.getElementById('ri-filter-label'); if(el) el.textContent=label; }
+function riClean(s){ return (s||'').toString().replace(/^"+|"+$/g,'').trim(); }
+function riIsPlayed(result){ return result && result!=='' && result!=='—' && result!=='TBD'; }
 
-function riIsPlayed(result) {
-  return result && result !== '' && result !== '—' && result !== 'TBD';
-}
-
-function riRenderRows(games) {
-  if(!games.length) {
-    document.getElementById('ri-body').innerHTML = `
-      <tr><td colspan="5" style="padding:32px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#7A95A8;">No games to show</td></tr>`;
+function riRenderRows(games){
+  if(!games.length){
+    document.getElementById('ri-body').innerHTML=`<tr><td colspan="5" style="padding:32px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#7A95A8;">No games to show</td></tr>`;
     return;
   }
-  document.getElementById('ri-body').innerHTML = games.map((g,i) => {
-    const played = riIsPlayed(g.result);
-    const bg = i%2===0 ? '#fff' : '#F9FAFC';
+  document.getElementById('ri-body').innerHTML=games.map((g,i)=>{
+    const played=riIsPlayed(g.result);
+    const bg=i%2===0?'#fff':'#F9FAFC';
     return `<tr style="border-bottom:1px solid #DDE4EC;background:${bg};">
       <td style="padding:13px 16px;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#00243A;line-height:1;">${g.date}</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#CC2B2B;">${g.day}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#00243A;line-height:1;">${g.date||'TBD'}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#CC2B2B;">${g.day||''}</div>
       </td>
-      <td style="padding:13px 16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#00243A;">${g.time}</td>
+      <td style="padding:13px 16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#00243A;">${g.time||'TBD'}</td>
       <td style="padding:13px 16px;">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:#00243A;">${g.home} <span style="color:#CC2B2B;font-weight:600;">vs</span> ${g.away}</div>
-        ${g.notes ? `<div style="font-size:11px;color:#7A95A8;margin-top:2px;">${g.notes}</div>` : ''}
+        ${g.notes?`<div style="font-size:11px;color:#7A95A8;margin-top:2px;">${g.notes}</div>`:''}
       </td>
-      <td style="padding:13px 16px;font-size:13px;color:#3A5568;">${g.location}</td>
+      <td style="padding:13px 16px;font-size:13px;color:#3A5568;">${g.location||'Athletic Centre'}</td>
       <td style="padding:13px 16px;text-align:center;">
         ${played
-          ? `<span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;color:#00243A;background:#EEF2F6;padding:4px 10px;border-radius:3px;">${g.result}</span>`
-          : `<span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(204,43,43,.08);color:#CC2B2B;padding:4px 10px;border-radius:2px;">Upcoming</span>`
+          ?`<span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;color:#00243A;background:#EEF2F6;padding:4px 10px;border-radius:3px;">${g.result}</span>`
+          :`<span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(204,43,43,.08);color:#CC2B2B;padding:4px 10px;border-radius:2px;">Upcoming</span>`
         }
       </td>
     </tr>`;
   }).join('');
 }
 
-function riFilter(type, btn) {
-  activeFilter = type;
-  document.querySelectorAll('[id^="btn-"]').forEach(b => {
-    b.style.color = '#7A95A8';
-    b.style.borderBottom = '2px solid transparent';
-  });
-  btn.style.color = '#CC2B2B';
-  btn.style.borderBottom = '2px solid #CC2B2B';
-  if(type === 'all') { riSetFilter('All Games'); riRenderRows(allGames); }
-  else if(type === 'upcoming') { riSetFilter('Upcoming'); riRenderRows(allGames.filter(g => !riIsPlayed(g.result))); }
-  else if(type === 'results') { riSetFilter('Results'); riRenderRows(allGames.filter(g => riIsPlayed(g.result))); }
+function riFilter(type, btn){
+  activeFilter=type;
+  document.querySelectorAll('[id^="btn-"]').forEach(b=>{ b.style.color='#7A95A8'; b.style.borderBottom='2px solid transparent'; });
+  btn.style.color='#CC2B2B'; btn.style.borderBottom='2px solid #CC2B2B';
+  if(type==='all'){ riSetFilter('All Games'); riRenderRows(allGames); }
+  else if(type==='upcoming'){ riSetFilter('Upcoming'); riRenderRows(allGames.filter(g=>!riIsPlayed(g.result))); }
+  else if(type==='results'){ riSetFilter('Results'); riRenderRows(allGames.filter(g=>riIsPlayed(g.result))); }
 }
 
 async function riLoad(){
-  if(!SHEET_ID || !SHEET_TAB){ riStatus('Add SHEET_ID and SHEET_TAB to activate'); return; }
+  if(!APPS_SCRIPT_URL){ riStatus('Paste your Apps Script URL to activate'); return; }
   riStatus('Loading...');
-  const csvUrl=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
-  const proxies=[
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(csvUrl)}`,
-    `https://corsproxy.io/?${encodeURIComponent(csvUrl)}`,
-    `https://thingproxy.freeboard.io/fetch/${csvUrl}`,
-  ];
-  for(const proxy of proxies){
-    try{
-      const res=await fetch(proxy,{cache:'no-store'});
-      if(!res.ok) continue;
-      const text=await res.text();
-      if(text.includes('<html')||text.length<10) continue;
-      const parsed=riParseCSV(text).slice(1);
-      const games=parsed.map(r=>({
-        // Columns: A=#  B=Date  C=Day  D=Time  E=Home  F=Score  G=Away  H=Location
-        date:    riClean(r[1]),
-        day:     riClean(r[2]),
-        time:    riClean(r[3]),
-        home:    riClean(r[4]),
-        result:  riClean(r[5]),
-        away:    riClean(r[6]),
-        location:riClean(r[7]),
-        notes:   riClean(r[8] || ''),
-      })).filter(g=>g.home&&g.home!=='Home Team'&&g.home!=='E'&&g.home!=='Team Name'&&g.home!=='Home Team');
-      if(games.length){
-        allGames=games;
-        riFilter(activeFilter,document.getElementById('btn-'+activeFilter));
-        riStatus('Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
-        return;
-      }
-    }catch(e){}
+  try {
+    const url = APPS_SCRIPT_URL + '?tab=' + encodeURIComponent(SHEET_TAB) + '&t=' + Date.now();
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if(json.error) throw new Error(json.error);
+    const games = json.rows.map(r=>({
+      date:     riClean(r['Date']      || r['B'] || ''),
+      day:      riClean(r['Day']       || r['C'] || ''),
+      time:     riClean(r['Time']      || r['D'] || ''),
+      home:     riClean(r['Home Team'] || r['E'] || ''),
+      result:   riClean(r['Score']     || r['F'] || ''),
+      away:     riClean(r['Away Team'] || r['G'] || ''),
+      location: riClean(r['Location']  || r['H'] || ''),
+      notes:    riClean(r['Notes']     || r['I'] || ''),
+    })).filter(g=>g.home && g.home!=='Home Team' && g.home!=='');
+    if(games.length){
+      allGames=games;
+      riFilter(activeFilter, document.getElementById('btn-'+activeFilter));
+      riStatus('Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+    } else {
+      riStatus('Sheet connected — add games to see schedule');
+    }
+  } catch(e) {
+    riStatus('Error: ' + e.message);
+    console.error('Schedule error:', e);
   }
-  riStatus('Could not load — check SHEET_ID, tab name, and that sheet is shared publicly (Anyone with link → Viewer)');
 }
 
 riLoad();
