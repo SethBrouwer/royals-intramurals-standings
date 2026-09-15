@@ -5,39 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Flag Football Standings — Royals Intramurals</title>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500&display=swap" rel="stylesheet"/>
-  <!--
-  ══════════════════════════════════════════════════════════════
-  IFRAME STANDINGS — Flag Football
-  ══════════════════════════════════════════════════════════════
-  Embed in Sidearm using the iFrame tool:
-    Width:    100%
-    Height:   680px  (12 teams — reduce if fewer teams)
-    Scrolling: Auto
-
-  TO CONNECT GOOGLE SHEETS:
-    1. Open your Royals Standings Google Sheet
-    2. Go to the "FlagFootball" tab
-    3. File → Share → Publish to web → "FlagFootball" tab → CSV → Publish
-    4. Copy the URL
-    5. Paste it below replacing the empty string in RI_SHEET_URL
-    6. Re-upload this file to GitHub Pages
-    Standings will then auto-refresh every 60 seconds.
-
-  GOOGLE SHEET COLUMN ORDER (must match exactly):
-    A: Rank   B: Team Name   C: W   D: L   E: PF   F: PA
-    G: Streak (e.g. WWWLL — full history string)   H: Notes
-  ══════════════════════════════════════════════════════════════
-  -->
   <style>
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:'Barlow',sans-serif; background:#fff; color:#00243A; }
     @keyframes ri-fade { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-    #ri-body tr { animation:ri-fade .25s ease both; }
   </style>
 </head>
 <body style="margin:0;padding:0;background:#fff;">
 
-<!-- Header -->
 <div style="background:#00243A;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #CC2B2B;">
   <div style="display:flex;align-items:center;gap:12px;">
     <span style="font-size:24px;">🏈</span>
@@ -47,15 +22,14 @@
     </div>
   </div>
   <div style="text-align:right;">
-    <div style="display:flex;align-items:center;gap:5px;justify-content:flex-end;" id="ri-live-dot">
+    <div style="display:flex;align-items:center;gap:5px;justify-content:flex-end;">
       <div style="width:6px;height:6px;border-radius:50%;background:#1A9E6A;"></div>
       <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);">Live</span>
     </div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;" id="ri-updated">—</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;color:rgba(255,255,255,.3);margin-top:2px;" id="ri-updated">Loading...</div>
   </div>
 </div>
 
-<!-- Table -->
 <table style="width:100%;border-collapse:collapse;">
   <thead>
     <tr style="background:#F4F7FA;border-bottom:2px solid #DDE4EC;">
@@ -70,178 +44,19 @@
     </tr>
   </thead>
   <tbody id="ri-body">
-      <tr style="border-bottom:1px solid #DDE4EC;border-left:3px solid #CC2B2B;background:rgba(0,36,58,.02);">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#00243A;">1</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 1</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">2</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 2</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">3</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 3</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">4</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 4</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">5</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 5</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">6</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 6</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">7</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 7</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">8</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 8</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">9</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 9</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">10</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 10</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">11</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 11</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
-      <tr style="border-bottom:1px solid #DDE4EC;">
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#7A95A8;">12</span></td>
-        <td style="padding:12px 16px;">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:#00243A;">Team 12</div>
-          <div style="font-size:11px;color:#7A95A8;">Registration not open yet</div>
-        </td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#00243A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#B52A2A;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:#3A5568;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#7A95A8;">—</span></td>
-        <td style="padding:12px 16px;text-align:center;"><span style="font-size:12px;color:#7A95A8;">—</span></td>
-      </tr>
+    <tr><td colspan="8" style="padding:32px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#7A95A8;">Loading standings...</td></tr>
   </tbody>
 </table>
 
-<!-- Footer -->
 <div style="background:#F4F7FA;border-top:1px solid #DDE4EC;padding:8px 16px;display:flex;align-items:center;justify-content:space-between;">
-  <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7A95A8;">Auto-refreshes every 60s from Google Sheets</span>
+  <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7A95A8;">Auto-refreshes every 60s</span>
   <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#CC2B2B;">Redeemer Royals Intramurals</span>
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-// SETUP — paste your Google Apps Script URL below
-// See apps-script.js for setup instructions (5 min, one time)
-// ══════════════════════════════════════════════════════════════
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRVnm-wZP1UHa-SnZ5l6wznGddqt87H2Z7hm0_8sil3Y25dXyaiCFd-sE09zSd2U_SXg/exec'; // ← paste your Web App URL here
-const SHEET_TAB = 'FlagFootball-Standings'; // ← pre-filled
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRVnm-wZP1UHa-SnZ5l6wznGddqt87H2Z7hm0_8sil3Y25dXyaiCFd-sE09zSd2U_SXg/exec';
+const SHEET_TAB = 'FlagFootball-Standings';
+const CACHE_KEY = 'ri_standings_FlagFootball-Standings';
 
 function riPct(w,l){ return w+l===0?'—':(w/(w+l)).toFixed(3).replace(/^0/,''); }
 function riPctCol(w,l){ if(w+l===0)return '#7A95A8'; const p=w/(w+l); return p>=.6?'#1A9E6A':p>=.4?'#C27800':'#7A95A8'; }
@@ -253,8 +68,12 @@ function riLast5(s){
 }
 function riStatus(msg){ const el=document.getElementById('ri-updated'); if(el) el.textContent=msg; }
 function riClean(s){ return (s||'').toString().replace(/^"+|"+$/g,'').trim(); }
-function riRender(rows){
-  if(!rows.length){ riStatus('Sheet connected — add team names to see standings'); return; }
+
+function riRender(rows, fromCache){
+  if(!rows||!rows.length){ 
+    document.getElementById('ri-body').innerHTML='<tr><td colspan="8" style="padding:32px;text-align:center;font-family:Barlow Condensed,sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#7A95A8;">Season not started yet</td></tr>';
+    return; 
+  }
   rows.sort((a,b)=>b.w-a.w||a.l-b.l||(b.pf-b.pa)-(a.pf-a.pa));
   const top=rows[0];
   document.getElementById('ri-body').innerHTML=rows.map((r,i)=>{
@@ -274,34 +93,61 @@ function riRender(rows){
       <td style="padding:12px 16px;text-align:center;">${riLast5(r.streak)}</td>
     </tr>`;
   }).join('');
-  riStatus('Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  if(fromCache) riStatus('Cached · refreshing...');
+}
+
+function riLoadCache(){
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if(cached){
+      const data = JSON.parse(cached);
+      riRender(data, true);
+      return true;
+    }
+  } catch(e){}
+  return false;
+}
+
+function riSaveCache(rows){
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(rows)); } catch(e){}
 }
 
 async function riLoad(){
-  if(!APPS_SCRIPT_URL){ riStatus('Paste your Apps Script URL to activate'); return; }
-  riStatus('Loading...');
   try {
     const url = APPS_SCRIPT_URL + '?tab=' + encodeURIComponent(SHEET_TAB) + '&t=' + Date.now();
     const res = await fetch(url);
     if(!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
     if(json.error) throw new Error(json.error);
-    const rows = json.rows.map(r=>({
-      team:   riClean(r['Team Name'] || r['B'] || ''),
-      w:      parseInt(r['W'] || r['C']) || 0,
-      l:      parseInt(r['L'] || r['D']) || 0,
-      pf:     parseInt(r['GF'] || r['E']) || 0,
-      pa:     parseInt(r['GA'] || r['F']) || 0,
-      streak: riClean(r['Streak'] || r['G'] || ''),
-      note:   riClean(r['Notes'] || r['H'] || ''),
-    })).filter(r=>r.team && r.team!=='Team Name' && r.team!=='');
-    riRender(rows);
-  } catch(e) {
-    riStatus('Error: ' + e.message);
-    console.error('Standings error:', e);
+    const rows = (json.rows||[]).map(r=>{
+      const teamKey   = Object.keys(r).find(k=>k.trim().toLowerCase()==='team name')||'';
+      const wKey      = Object.keys(r).find(k=>k.trim().toLowerCase()==='w')||'';
+      const lKey      = Object.keys(r).find(k=>k.trim().toLowerCase()==='l')||'';
+      const gfKey     = Object.keys(r).find(k=>k.trim().toLowerCase()==='gf')||'';
+      const gaKey     = Object.keys(r).find(k=>k.trim().toLowerCase()==='ga')||'';
+      const streakKey = Object.keys(r).find(k=>k.trim().toLowerCase()==='streak')||'';
+      const noteKey   = Object.keys(r).find(k=>k.trim().toLowerCase()==='notes')||'';
+      return {
+        team:   riClean(r[teamKey]||''),
+        w:      parseInt(r[wKey])||0,
+        l:      parseInt(r[lKey])||0,
+        pf:     parseInt(r[gfKey])||0,
+        pa:     parseInt(r[gaKey])||0,
+        streak: riClean(r[streakKey]||''),
+        note:   riClean(r[noteKey]||''),
+      };
+    }).filter(r=>r.team&&r.team!=='Team Name'&&r.team!=='');
+    riSaveCache(rows);
+    riRender(rows, false);
+    riStatus('Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  } catch(e){
+    riStatus('Refresh failed · showing cached data');
+    console.error('Standings error:',e);
   }
 }
 
+// Load cache instantly, then fetch fresh data
+riLoadCache();
 riLoad();
 setInterval(riLoad, 60000);
 </script>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Royals Intramurals — Complete Setup Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Barlow',sans-serif; background:#F4F7FA; color:#00243A; font-size:15px; line-height:1.6; }
+    h3  { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:800; text-transform:uppercase; color:#00243A; margin-bottom:8px; }
+    p   { color:#3A5568; margin-bottom:12px; }
+    li  { color:#3A5568; margin-bottom:6px; }
+    code { background:#EEF2F6; border:1px solid #C5D1DC; border-radius:3px; padding:2px 7px; font-size:13px; font-family:monospace; color:#00243A; }
+    .card { background:#fff; border:1px solid #DDE4EC; border-radius:6px; overflow:hidden; margin-bottom:20px; }
+    .card-hd { background:#00243A; padding:14px 24px; display:flex; align-items:center; gap:12px; }
+    .card-hd-title { font-family:'Barlow Condensed',sans-serif; font-size:17px; font-weight:800; text-transform:uppercase; color:#fff; letter-spacing:1px; }
+    .card-body { padding:22px 24px; }
+    .step-num { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; background:#CC2B2B; font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:800; color:#fff; flex-shrink:0; }
+    .tip  { background:#FFF8E0; border:1px solid #F5CC7A; border-radius:4px; padding:12px 16px; font-size:13px; color:#7A4800; margin-top:12px; }
+    .good { background:#E8F8F2; border:1px solid #A8DFC8; border-radius:4px; padding:12px 16px; font-size:13px; color:#0A5C3A; margin-top:12px; }
+    .warn { background:#FFF0F0; border:1px solid #F5AAAA; border-radius:4px; padding:12px 16px; font-size:13px; color:#7A0000; margin-top:12px; }
+    .file-tag { display:inline-block; background:#00243A; color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; padding:3px 10px; border-radius:2px; margin:2px 3px 2px 0; }
+    .file-tag.red { background:#CC2B2B; }
+    .file-tag.grey { background:#7A95A8; }
+    ol.steps { padding-left:0; list-style:none; }
+    ol.steps li { display:flex; gap:14px; align-items:flex-start; margin-bottom:16px; }
+    ol.steps li .text { flex:1; }
+    table.ref { width:100%; border-collapse:collapse; }
+    table.ref th { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#7A95A8; padding:9px 14px; background:#F4F7FA; border-bottom:1px solid #DDE4EC; text-align:left; }
+    table.ref td { padding:10px 14px; font-size:13px; border-bottom:1px solid #DDE4EC; color:#3A5568; vertical-align:top; }
+    table.ref tr:last-child td { border-bottom:none; }
+    table.ref tr:hover td { background:#F9FAFC; }
+    .sport-col { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; color:#00243A; }
+  </style>
+</head>
+<body style="margin:0;padding:0;background:#F4F7FA;">
+
+<!-- Header -->
+<div style="background:#00243A;border-bottom:3px solid #CC2B2B;padding:20px 40px;display:flex;align-items:center;gap:16px;">
+  <img src="https://dxbhsrqyrr690.cloudfront.net/sidearm.nextgen.sites/redeemer.sidearmsports.com/images/responsive_2020/main.svg" alt="Redeemer Royals" style="height:44px;width:auto;"/>
+  <div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.4);">Redeemer Intramurals · 2026/27</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;text-transform:uppercase;color:#fff;line-height:1.1;">Complete <span style="color:#CC2B2B;">Setup Guide</span></div>
+  </div>
+</div>
+
+<div style="max-width:900px;margin:0 auto;padding:36px 32px 60px;">
+
+  <!-- What you have -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-hd-title">📦 What You Have &amp; What Each File Does</div>
+    </div>
+    <div class="card-body">
+      <p>You downloaded three types of files. Here is exactly what each one is for:</p>
+
+      <h3 style="margin-top:16px;">1 — The 15 Standings iFrame Files</h3>
+      <p>Files named like <span class="file-tag">standings-basketball.html</span> <span class="file-tag">standings-soccer_i.html</span> etc.</p>
+      <p>These are the <strong>live standings tables</strong> that show up on your Sidearm sport pages. Each one is a mini webpage that Sidearm will display inside a box (iFrame) on the relevant sport page. You upload these to GitHub Pages (free hosting) so they have a public URL. Then you paste that URL into Sidearm's iFrame tool on each sport page.</p>
+      <p>Right now they show placeholder "Team 1, Team 2…" rows. Once you connect Google Sheets (Phase 3 below) they will automatically pull in real team names and scores and refresh every 60 seconds.</p>
+
+      <h3 style="margin-top:20px;">2 — The 15 CSV Template Files</h3>
+      <p>Files named like <span class="file-tag grey">Basketball.csv</span> <span class="file-tag grey">SoccerI.csv</span> etc. inside the <code>csv_templates</code> folder.</p>
+      <p>These are the <strong>starter data files for your Google Sheet</strong>. Instead of building your spreadsheet from scratch, you import these directly into Google Sheets — one per tab. Each one already has the correct column headers (Rank, Team Name, W, L, PF, PA, Streak, Notes) and 12 blank team rows ready to fill in. You do not need to set up any columns manually.</p>
+
+      <h3 style="margin-top:20px;">3 — This Setup Guide</h3>
+      <p>The file you are reading right now. Keep it open and follow each phase below in order.</p>
+
+      <div class="tip">💡 <strong>You only need to do this setup once.</strong> After everything is connected, updating standings for the rest of the season takes about 2 minutes per game night — just open the Google Sheet and change some numbers.</div>
+    </div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#CC2B2B;margin:28px 0 10px;display:flex;align-items:center;gap:8px;">
+    <span style="width:24px;height:2px;background:#CC2B2B;display:inline-block;"></span>Phase 1 of 4
+  </div>
+  <div class="card">
+    <div class="card-hd">
+      <span class="step-num">1</span>
+      <div class="card-hd-title">Build Your Google Sheet</div>
+    </div>
+    <div class="card-body">
+      <p>This is your central standings database. You will update it after every game night and it will automatically push to the website.</p>
+
+      <ol class="steps">
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">1</span>
+          <div class="text">
+            Go to <strong><a href="https://sheets.google.com" target="_blank" style="color:#CC2B2B;">sheets.google.com</a></strong> and click the big <strong>+</strong> to create a new blank spreadsheet.
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">2</span>
+          <div class="text">
+            Click the title at the top (it says "Untitled spreadsheet") and rename it: <code>Royals Intramurals 2026/27 Standings</code>
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">3</span>
+          <div class="text">
+            <strong>Create 15 tabs</strong> — one per sport. Right-click the first tab at the bottom of the screen → Rename → type the first sport name. Then click the <strong>+</strong> button to add a new tab and repeat.<br/>
+            <span style="font-size:13px;color:#7A95A8;">The tab names must be spelled exactly as listed in the reference table at the bottom of this guide.</span>
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">4</span>
+          <div class="text">
+            <strong>Import the CSV files into each tab.</strong> Here is how:
+            <ol style="padding-left:20px;margin-top:8px;list-style:decimal;">
+              <li>Click the <strong>Basketball</strong> tab to make it active</li>
+              <li>Go to <strong>File → Import</strong></li>
+              <li>Click <strong>Upload</strong> and drag in the file <code>Basketball.csv</code> from your csv_templates folder</li>
+              <li>Under "Import location" select <strong>Replace current sheet</strong></li>
+              <li>Click <strong>Import data</strong></li>
+              <li>Repeat for every tab using the matching CSV file</li>
+            </ol>
+          </div>
+        </li>
+      </ol>
+
+      <div class="good">✅ After this step each tab will have the correct headers in Row 1 and 12 blank team rows below it. The column order is: <strong>A=Rank · B=Team Name · C=W · D=L · E=PF · F=PA · G=Streak · H=Notes</strong></div>
+      <div class="tip" style="margin-top:10px;">💡 You can now fill in the team names in column B for any sport that already has registered teams. Leave the W and L columns as 0 until games start.</div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#CC2B2B;margin:28px 0 10px;display:flex;align-items:center;gap:8px;">
+    <span style="width:24px;height:2px;background:#CC2B2B;display:inline-block;"></span>Phase 2 of 4
+  </div>
+  <div class="card">
+    <div class="card-hd">
+      <span class="step-num">2</span>
+      <div class="card-hd-title">Host the Standings Files on GitHub Pages (Free)</div>
+    </div>
+    <div class="card-body">
+      <p>The 15 standings HTML files need to live at a public URL so Sidearm can embed them. GitHub Pages is free and takes about 5 minutes to set up.</p>
+
+      <ol class="steps">
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">1</span>
+          <div class="text">
+            Go to <strong><a href="https://github.com" target="_blank" style="color:#CC2B2B;">github.com</a></strong> and create a free account if you don't have one.
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">2</span>
+          <div class="text">
+            Click the <strong>+</strong> in the top right → <strong>New repository</strong>.<br/>
+            Name it: <code>royals-intramurals-standings</code><br/>
+            Set it to <strong>Public</strong>. Click <strong>Create repository</strong>.
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">3</span>
+          <div class="text">
+            On the next screen click <strong>uploading an existing file</strong>.<br/>
+            Drag and drop all 15 <code>standings-[sport].html</code> files into the upload area.<br/>
+            Scroll down and click <strong>Commit changes</strong>.
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">4</span>
+          <div class="text">
+            Click <strong>Settings</strong> (top of the repo page) → scroll down to <strong>Pages</strong> in the left sidebar.<br/>
+            Under "Source" select <strong>Deploy from a branch</strong> → choose <strong>main</strong> → click <strong>Save</strong>.
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">5</span>
+          <div class="text">
+            Wait about 2 minutes then refresh the Settings → Pages page. You will see a green box that says:<br/>
+            <code>Your site is live at https://yourusername.github.io/royals-intramurals-standings/</code><br/>
+            Your basketball standings file is now live at:<br/>
+            <code>https://yourusername.github.io/royals-intramurals-standings/standings-basketball.html</code>
+          </div>
+        </li>
+      </ol>
+
+      <div class="good">✅ All 15 files now have public URLs. Write them down or keep this tab open for Phase 3.</div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#CC2B2B;margin:28px 0 10px;display:flex;align-items:center;gap:8px;">
+    <span style="width:24px;height:2px;background:#CC2B2B;display:inline-block;"></span>Phase 3 of 4
+  </div>
+  <div class="card">
+    <div class="card-hd">
+      <span class="step-num">3</span>
+      <div class="card-hd-title">Connect Google Sheets to Each Standings File</div>
+    </div>
+    <div class="card-body">
+      <p>This is the step that makes standings auto-update from the Sheet. Do this once per sport.</p>
+
+      <h3>Part A — Get your Sheet ID (one step, same for all 15 sports)</h3>
+      <ol class="steps" style="margin-top:12px;">
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">1</span>
+          <div class="text">Open your Google Sheet and look at the URL in your browser address bar.</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">2</span>
+          <div class="text">Copy the long random string between <code>/d/</code> and <code>/edit</code> — that is your Sheet ID. It looks like: <code>1aBcDeFgHiJkLmNoPqRsTuVwXyZ</code></div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">3</span>
+          <div class="text">Click <strong>Share</strong> (top right) → set General access to <strong>Anyone with the link → Viewer</strong> → Done. This is required for the standings to load publicly.</div>
+        </li>
+      </ol>
+      <div class="good">✅ You only need one Sheet ID for all 15 sports — it's the same spreadsheet. The tab name is the only thing that changes per sport.</div>
+
+      <h3 style="margin-top:24px;">Part B — Add your Sheet ID and Tab Name to each standings file</h3>
+      <p style="margin-top:8px;">The files no longer need a published CSV URL. Instead they use your Sheet ID and tab name directly — which is simpler and works without any proxy.</p>
+
+      <h3 style="margin-top:16px;font-size:15px;">Step 1 — Find your Sheet ID</h3>
+      <p>Open your Google Sheet. Look at the URL in your browser:</p>
+      <div style="background:#F4F7FA;border:1px solid #DDE4EC;border-radius:4px;padding:12px 16px;font-family:monospace;font-size:13px;color:#00243A;margin:8px 0 12px 0;">
+        https://docs.google.com/spreadsheets/d/<span style="background:#FFEEBA;padding:1px 3px;border-radius:2px;color:#7A4800;">1aBcDeFgHiJkLmNoPqRsTuVwXyZ</span>/edit
+      </div>
+      <p>The highlighted part between <code>/d/</code> and <code>/edit</code> is your Sheet ID. Copy it.</p>
+
+      <h3 style="margin-top:16px;font-size:15px;">Step 2 — Make sure the sheet is shared publicly</h3>
+      <ol style="padding-left:20px;margin:8px 0 12px 0;list-style:decimal;font-size:14px;color:#3A5568;line-height:2;">
+        <li>Click <strong>Share</strong> (top right of Google Sheets)</li>
+        <li>Under "General access" change it to <strong>Anyone with the link</strong></li>
+        <li>Make sure it says <strong>Viewer</strong> (not Editor)</li>
+        <li>Click Done</li>
+      </ol>
+      <div class="warn">⚠️ The sheet must be set to "Anyone with the link" for the standings to load. It does not need to be published — just shared as a viewer link.</div>
+
+      <h3 style="margin-top:16px;font-size:15px;">Step 3 — Edit each standings file on GitHub</h3>
+      <ol style="padding-left:20px;margin:8px 0 12px 0;list-style:decimal;font-size:14px;color:#3A5568;line-height:2;">
+        <li>Go to your GitHub repository</li>
+        <li>Click <code>standings-basketball.html</code></li>
+        <li>Click the <strong>pencil icon</strong> (Edit this file)</li>
+        <li>Press <strong>Ctrl+F</strong> and search for <code>SHEET_ID  = ''</code></li>
+        <li>Paste your Sheet ID between the quotes:<br/>
+          <code>const SHEET_ID  = '1aBcDeFgHiJkLmNoPqRsTuVwXyZ';</code>
+        </li>
+        <li>On the next line change the tab name:<br/>
+          <code>const SHEET_TAB = 'Basketball';</code>
+        </li>
+        <li>Scroll down and click <strong>Commit changes</strong></li>
+        <li>Repeat for all 15 files — the SHEET_ID is the same for all of them, only the SHEET_TAB changes each time</li>
+      </ol>
+
+      <div class="tip">💡 <strong>The Sheet ID is identical for all 15 files</strong> — it's the same Google Sheet. Only the tab name (SHEET_TAB) changes. So once you have the ID, it's a quick copy-paste job across all 15 files right in GitHub's editor.</div>
+      <div class="good" style="margin-top:10px;">✅ Standings are now live and auto-updating. Open your basketball standings URL in a browser — it should show your team names within a few seconds.</div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#CC2B2B;margin:28px 0 10px;display:flex;align-items:center;gap:8px;">
+    <span style="width:24px;height:2px;background:#CC2B2B;display:inline-block;"></span>Phase 4 of 4
+  </div>
+  <div class="card">
+    <div class="card-hd">
+      <span class="step-num">4</span>
+      <div class="card-hd-title">Embed Each Standings File into Sidearm</div>
+    </div>
+    <div class="card-body">
+      <p>Now you place each standings iFrame inside the correct Sidearm sport page. Do this once per sport.</p>
+
+      <ol class="steps">
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">1</span>
+          <div class="text">In Sidearm go to the <strong>Basketball sport file</strong> and open the page editor.</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">2</span>
+          <div class="text">Click the <strong>iFrame button</strong> in the editor toolbar.</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">3</span>
+          <div class="text">
+            Enter these settings:<br/>
+            <strong>URL:</strong> <code>https://yourusername.github.io/royals-intramurals-standings/standings-basketball.html</code><br/>
+            <strong>Width:</strong> <code>100%</code><br/>
+            <strong>Height:</strong> <code>680</code><br/>
+            <strong>Scrolling:</strong> <code>Auto</code>
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">4</span>
+          <div class="text">Click OK or Insert. Save the sport page. The standings table will now appear embedded on the page.</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#3A5568;font-size:13px;">5</span>
+          <div class="text">Repeat for all 15 sport pages using the matching standings URL for each.</div>
+        </li>
+      </ol>
+
+      <div class="tip">💡 If the table gets cut off increase the height. For 12 teams <code>680</code>px works well. For fewer teams you can reduce it to <code>500</code>px.</div>
+      <div class="good" style="margin-top:10px;">✅ Setup complete. The iFrame is live on Sidearm and pulling from Google Sheets automatically.</div>
+    </div>
+  </div>
+
+  <!-- Updating during season -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-hd-title">🏆 Updating Standings During the Season</div>
+    </div>
+    <div class="card-body">
+      <p>After every game night this is all you need to do — no Sidearm login, no file uploads, no coding:</p>
+
+      <ol class="steps">
+        <li>
+          <span class="step-num" style="background:#1A9E6A;font-size:13px;">1</span>
+          <div class="text">Open the Google Sheet on any device (phone, laptop, tablet).</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#1A9E6A;font-size:13px;">2</span>
+          <div class="text">Click the tab for the sport that played (e.g. Basketball).</div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#1A9E6A;font-size:13px;">3</span>
+          <div class="text">
+            Find the teams that played. Update their <strong>W</strong> (column C) and <strong>L</strong> (column D) numbers.
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#1A9E6A;font-size:13px;">4</span>
+          <div class="text">
+            Update the <strong>Streak</strong> column (column G). This is a running string of results — just add a W or L to the end.<br/>
+            Example: if a team's streak was <code>WWLL</code> and they just won, change it to <code>WWLLW</code>.<br/>
+            <span style="font-size:13px;color:#7A95A8;">The website automatically reads the last character for the current streak and the last 5 characters for the coloured dots.</span>
+          </div>
+        </li>
+        <li>
+          <span class="step-num" style="background:#1A9E6A;font-size:13px;">5</span>
+          <div class="text">Save. The Sidearm website updates automatically within <strong>60 seconds</strong>. No further action needed.</div>
+        </li>
+      </ol>
+
+      <div class="good">✅ Anyone you share the Google Sheet with (give Edit access via the Share button) can update standings — great for having a student volunteer manage it on game nights.</div>
+    </div>
+  </div>
+
+  <!-- Sport tab reference -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-hd-title">📋 Sport Reference Table — Tab Names, CSV Files &amp; Standings Files</div>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <table class="ref">
+        <thead>
+          <tr>
+            <th>Sport</th>
+            <th>Google Sheet Tab Name<br/><span style="font-weight:500;text-transform:none;letter-spacing:0;">(type exactly as shown)</span></th>
+            <th>CSV File to Import</th>
+            <th>Standings HTML File</th>
+            <th>iFrame Height</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="sport-col">🏀 Basketball</span></td><td><code>Basketball</code></td><td><code>Basketball.csv</code></td><td><code>standings-basketball.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🏀 Outdoor Basketball</span></td><td><code>OutdoorBasketball</code></td><td><code>OutdoorBasketball.csv</code></td><td><code>standings-outdoor_basketball.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🏀 3on3 Basketball</span></td><td><code>3on3Basketball</code></td><td><code>3on3Basketball.csv</code></td><td><code>standings-3on3_basketball.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">⚽ Soccer I</span></td><td><code>SoccerI</code></td><td><code>SoccerI.csv</code></td><td><code>standings-soccer_i.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">⚽ Soccer II</span></td><td><code>SoccerII</code></td><td><code>SoccerII.csv</code></td><td><code>standings-soccer_ii.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🏐 Volleyball</span></td><td><code>Volleyball</code></td><td><code>Volleyball.csv</code></td><td><code>standings-volleyball.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🏐 Beach Volleyball</span></td><td><code>BeachVolleyball</code></td><td><code>BeachVolleyball.csv</code></td><td><code>standings-beach_volleyball.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🏈 Flag Football</span></td><td><code>FlagFootball</code></td><td><code>FlagFootball.csv</code></td><td><code>standings-flag_football.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🥏 Ultimate Frisbee</span></td><td><code>UltimateFrisbee</code></td><td><code>UltimateFrisbee.csv</code></td><td><code>standings-ultimate_frisbee.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🥏 Disc Golf</span></td><td><code>DiscGolf</code></td><td><code>DiscGolf.csv</code></td><td><code>standings-disc_golf.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🏐 Spike Ball</span></td><td><code>SpikeBall</code></td><td><code>SpikeBall.csv</code></td><td><code>standings-spike_ball.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🏓 Pickleball</span></td><td><code>Pickleball</code></td><td><code>Pickleball.csv</code></td><td><code>standings-pickleball.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">⚾ Slo Pitch / Softball</span></td><td><code>SloPitchSoftball</code></td><td><code>SloPitchSoftball.csv</code></td><td><code>standings-slo_pitch_softball.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🏃 Triathlon</span></td><td><code>Triathlon</code></td><td><code>Triathlon.csv</code></td><td><code>standings-triathlon.html</code></td><td>680px</td></tr>
+          <tr><td><span class="sport-col">🔴 Dodgeball</span></td><td><code>Dodgeball</code></td><td><code>Dodgeball.csv</code></td><td><code>standings-dodgeball.html</code></td><td>680px</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:24px 0 0;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#CC2B2B;margin-bottom:4px;">Vertical Purpose</div>
+    <div style="font-size:12px;color:#7A95A8;">Redeemer University Intramurals 2026/27 · Ancaster, ON</div>
+  </div>
+
+</div>
+</body>
+</html>
